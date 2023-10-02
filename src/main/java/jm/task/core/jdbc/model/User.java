@@ -1,6 +1,7 @@
 package jm.task.core.jdbc.model;
+
 import javax.persistence.*;
-import static javax.persistence.GenerationType.IDENTITY;
+
 
 @Entity
 @Table(name = "users")

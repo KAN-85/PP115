@@ -1,5 +1,4 @@
 package jm.task.core.jdbc.util;
-import java.util.Properties;
 
 import jm.task.core.jdbc.model.User;
 import org.hibernate.SessionFactory;
@@ -8,8 +7,11 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.hibernate.service.ServiceRegistry;
 
+import java.util.Properties;
+
 public class Util {
     private static SessionFactory sessionFactory;
+
     public static SessionFactory getSessionFactory() {
         if (sessionFactory == null) {
             try {
