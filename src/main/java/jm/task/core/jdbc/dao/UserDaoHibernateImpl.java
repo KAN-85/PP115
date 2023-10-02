@@ -1,14 +1,15 @@
 package jm.task.core.jdbc.dao;
+
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+
 import javax.persistence.Query;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
     private static String sql;
-    private User user;
 
     public UserDaoHibernateImpl() {
 
@@ -58,10 +59,7 @@ public class UserDaoHibernateImpl implements UserDao {
                 transaction.rollback();
             }
             e.printStackTrace();
-
         }
-
-
     }
 
     @Override
@@ -77,12 +75,17 @@ public class UserDaoHibernateImpl implements UserDao {
             }
             e.printStackTrace();
         }
-
-
     }
 
     @Override
     public void removeUserById(long id) {
+        try (Session session = Util.getSessionFactory().openSession()) {
+            User user = session.get(User.class, id);
+            session.remove(user);
+        } catch (Exception e) {
+            System.out.println("Не удалось удалить пользователя");
+            e.printStackTrace();
+        }
 
     }
 
@@ -97,20 +100,18 @@ public class UserDaoHibernateImpl implements UserDao {
         return null;
     }
 
-
-        @Override
-        public void cleanUsersTable () {
-            try (Session session = Util.getSessionFactory().openSession()) {
-                Transaction transaction = session.beginTransaction();
-                sql = "TRUNCATE TABLE users";
-                Query query = session.createSQLQuery(sql);
-                query.executeUpdate();
-                transaction.commit();
-            } catch (Exception e) {
-                System.out.println("Не удалось очистить таблицу");
-                e.printStackTrace();
-            }
-
+    @Override
+    public void cleanUsersTable() {
+        try (Session session = Util.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            sql = "TRUNCATE TABLE users";
+            Query query = session.createSQLQuery(sql);
+            query.executeUpdate();
+            transaction.commit();
+        } catch (Exception e) {
+            System.out.println("Не удалось очистить таблицу");
+            e.printStackTrace();
         }
     }
+}
 
