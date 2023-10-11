@@ -6,14 +6,15 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import javax.persistence.Query;
+import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 public class UserDaoHibernateImpl implements UserDao {
-    private static String sql;
-
-    public UserDaoHibernateImpl() {
-
-    }
+    private String sql;
+    static Logger logger;
 
     @Override
     public void createUsersTable() {
@@ -25,7 +26,7 @@ public class UserDaoHibernateImpl implements UserDao {
             query.executeUpdate();
             transaction.commit();
         } catch (Exception e) {
-            System.out.println("Не удалось создать таблицу");
+            logger.log(Level.WARNING,"Не удалось создать таблицу");
             e.printStackTrace();
         }
 
@@ -40,7 +41,7 @@ public class UserDaoHibernateImpl implements UserDao {
             query.executeUpdate();
             transaction.commit();
         } catch (Exception e) {
-            System.out.println("Не удалось удалить таблицу");
+            logger.log(Level.WARNING,"Не удалось удалить таблицу");
             e.printStackTrace();
         }
 
@@ -48,31 +49,24 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-        Transaction transaction = null;
         try (Session session = Util.getSessionFactory().openSession()) {
             session.beginTransaction();
             session.save(new User(name, lastName, age));
             session.getTransaction().commit();
         } catch (Exception e) {
-            System.out.println(":(");
-            if (transaction != null) {
-                transaction.rollback();
-            }
+            logger.log(Level.WARNING,":(");
             e.printStackTrace();
         }
     }
 
     @Override
     public void saveUser(User user) {
-        Transaction transaction = null;
         try (Session session = Util.getSessionFactory().openSession()) {
             session.beginTransaction();
             session.save(user);
             session.getTransaction().commit();
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
+            logger.log(Level.WARNING,":(((");
             e.printStackTrace();
         }
     }
@@ -83,7 +77,7 @@ public class UserDaoHibernateImpl implements UserDao {
             User user = session.get(User.class, id);
             session.remove(user);
         } catch (Exception e) {
-            System.out.println("Не удалось удалить пользователя");
+            logger.log(Level.WARNING,"Не удалось удалить пользователя");
             e.printStackTrace();
         }
 
@@ -94,10 +88,10 @@ public class UserDaoHibernateImpl implements UserDao {
         try (Session session = Util.getSessionFactory().openSession()) {
             return session.createQuery("from User", User.class).list();
         } catch (Exception e) {
-            System.out.println(":((");
+            logger.log(Level.WARNING,":((");
             e.printStackTrace();
         }
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -109,7 +103,7 @@ public class UserDaoHibernateImpl implements UserDao {
             query.executeUpdate();
             transaction.commit();
         } catch (Exception e) {
-            System.out.println("Не удалось очистить таблицу");
+            logger.log(Level.WARNING,"Не удалось очистить таблицу");
             e.printStackTrace();
         }
     }
